@@ -1,134 +1,52 @@
-# ClickVisit
+# 🧠 Perguntas para medir aprendizado 
 
-Aplicação web para **agendamento de visitas a imóveis**. Corretores (autônomos ou vinculados a uma imobiliária) geram links de agendamento; clientes escolhem o melhor horário dentre a agenda do corretor e a disponibilidade do imóvel.
+1. **Explique com suas palavras o papel de cada camada da arquitetura MVC usada neste projeto.**  
+   *Como o Model, o Controller e a View interagem entre si?*
 
-## Sumário
+   ## Models
 
-1. [Descrição do sistema](#c1)  
-2. [Estrtura de pastas e arquivos](#c2)  
-3. [Como executar o projeto localmente](#c3)  
-4. [](#c4)  
-5. [](#c5)  
+Os models são os arquivos que lidam direto com o banco de dados. Cada entidade (aluno, curso, professor, usuário) tem seu próprio model.
 
-## <a name="c1"></a>1. Descrição do sistema
+Eles fazem coisas como:
 
-| Papel           | Permissões principais                                                              |
-| --------------- | ---------------------------------------------------------------------------------- |
-| **Imobiliária** | Cadastro de imóveis, vinculação de corretores, bloqueio de horários (reforma etc.) |
-| **Corretor**    | Mantém agenda pessoal, gera link exclusivo para o cliente                          |
-| **Cliente**     | Acessa link, compara agendas, agenda visita                                        |
+- Buscar todos os registros
+- Criar novos dados
+- Atualizar ou deletar registros
 
-Fluxo resumido:
-
-1. Corretor envia link do imóvel.
-2. Cliente escolhe horário livre.
-3. Sistema grava em `events` e `visits`.
-4. Horário fica bloqueado para novos agendamentos.
+Exemplo: o `aluno.js` tem funções para listar alunos, adicionar um novo, editar e até mostrar quais alunos pertencem a um curso.
 
 ---
 
-**Padrão MVC:** Estrutura organizada em Model, View e Controller
+## Controllers
 
-**PostgreSQL:** Banco de dados relacional utilizado para persistência dos dados.
+Os controllers recebem as requisições que o usuário faz na aplicação (por exemplo, ao clicar em "Cadastrar aluno") e falam com os models para realizar as ações necessárias.
 
-**UUID:** Utilização de UUID como chave primária na tabela `users`.
+Temos controladores como:
 
-**Scripts com `nodemon`:** Utilização do `nodemon` para reiniciar automaticamente o servidor após alterações no código.
-
-**Testes:** Inclui estrutura básica para testes automatizados.
-
-
-
-## <a name="c2"></a>2. Estrutura de pastas e arquivos
-
-```text
-.
-├── assets/              # imagens e arquivos estáticos gerais
-├── config/
-│   └── db.js            # conexão PostgreSQL
-├── controllers/         # lógica de negócio (por entidade)
-│   ├── aboutController.js
-│   ├── alunoController.js
-│   ├── contactController.js
-│   ├── homeController.js
-│   └── userController.js
-├── documents/
-│   ├── assetsWAD/
-│   |   └── ...
-│   └── PI-WAD.md        # documentação acadêmica
-├── models/              # mapeamento das tabelas (DAO)
-│   ├── aluno.js
-│   └── UserModel.js
-├── node_modules/ 
-│   └── ...
-├── public/              # CSS, JS e imgs servidos pelo Express
-│   └── ...
-├── routes/
-│   ├── alunos.js        # exemplo de rota
-│   ├── frontRoutes.js   # rotas de views
-│   └── userRoutes.js
-├── scripts/
-│   ├── ClickVisit.sql   # schema completo do banco
-│   ├── init.sql
-│   └── runSQLScript.js  # utilitário para popular o BD
-├── services/            # Serviços auxiliares do sistema
-│   └── userService.js
-├── tests/               # Arquivos de testes unitários
-│   ├── userController.test.js
-│   ├── userModel.test.js
-│   ├── userRoutes.test.js
-│   └── userService.test.js
-├── views/  
-├── styles/              # Arquivos CSS públicos
-├── app.js               # app Express (rotas básicas)
-├── server.js            # ponto de entrada — sobe o servidor
-├── .env                 # variáveis de ambiente (DB, PORT…)
-├── package-lock.json    # Gerenciador de dependências do Node.js
-├── package.json         # dependências e scripts npm
-└── readme.md            # Documentação do projeto (Markdown)
-```
-
-## <a name="c3"></a>3. Como executar o projeto localmente
-
-1. **Clone o repositório**
-
-   ```bash
-   git clone https://github.com/<seu-user>/<seu-repo>.git
-   cd <seu-repo>
-   ```
-
-2. **Instale as dependências**
-
-   ```bash
-   npm install
-   ```
-
-3. **Configure o ambiente**
-
-   Copie `.env` e preencha:
-
-   ```env
-   DB_HOST=<host>
-   DB_PORT=5432
-   DB_USER=<usuario>
-   DB_PASSWORD=<senha>
-   DB_DATABASE=<nome_bd>
-   PORT=3000
-   ```
-
-4. **Inicialize o banco**
-
-   ```bash
-   npm run init-db            # executa scripts/ClickVisit.sql
-   ```
-
-5. **Inicie em modo de desenvolvimento**
-
-   ```bash
-   npm run dev                # usa nodemon p/ hot-reload
-   ```
-
-   A aplicação estará em **[http://localhost:3000](http://localhost:3000)**.
+- `homeController`: mostra a página inicial
+- `alunoController`: cuida de tudo que envolve alunos
+- `cursoController`: adiciona, edita ou remove cursos
+- `professorController`: gerencia professores
+- `userController`: entrega uma API em JSON para manipular usuários
 
 ---
 
+## Views
+Os views são a interface do servidor com o usuário. Eles servem para enviar pacotes de JSON para o backend. Recebem rotas e mostram ao usuário as informações.
+
+Exemplo: `aluno.ejs`
+
+---  
+
+2. **Como ocorre o envio e o recebimento de dados no formato JSON neste projeto?**  
+   *Cite uma rota que responde em JSON e explique seu funcionamento.*
+   
+   ```javascript
+   router.post('/', controller.store);
+   ```
+   Essa rota, por exemplo, guia para o Controller do Aluno, levando as informacões em JSON que serão convertidas em uma requisicao para o banco de dados no Model. Esse criará um novo aluno na tabela aluno.
+
+3. **Qual a importância de usar HTML básico com formulários e tabelas para organizar e manipular dados no navegador?**  
+   *Por que esse tipo de estrutura ainda é útil em projetos back-end com Node.js?*
+
+      Esse tipo de estrutura ainda eh útil por que da a possibilidade de verificar todas as funcionalidades do sistema sem precisar mexer com tecnologias mais complexas, que sim, geram resultados melhores, mas que tomariam muito mais tempo para *debugar*.
